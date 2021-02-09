@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     slug: { type: DataTypes.STRING, unique: true },
     email: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       validate: {
         isEmail: true,
       },
@@ -37,10 +37,17 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     startDate: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING,
+      validate: {
+        isDate: true,
+        isAfter: "02-01-2015",
+      },
     },
     endDate: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING,
+      validate: {
+        isDate: true,
+      },
     },
     image: {
       type: DataTypes.STRING,
