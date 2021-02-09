@@ -1,11 +1,9 @@
-const SequelizeSlugify = require("sequelize-slugify");
-
 module.exports = (sequelize, DataTypes) => {
   const Event = sequelize.define("Event", {
     organizer: {
       type: DataTypes.STRING,
       validate: {
-        len: [20],
+        len: [1, 20],
       },
     },
     name: {
@@ -14,7 +12,6 @@ module.exports = (sequelize, DataTypes) => {
         notContains: "event",
       },
     },
-    slug: { type: DataTypes.STRING, unique: true },
     email: {
       type: DataTypes.STRING,
       validate: {
@@ -22,13 +19,13 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     numOfSeats: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       validate: {
         min: 1,
       },
     },
     bookedSeats: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
 
       isGreaterThanOtherField(numOfSeats) {
         if (parseInt(numOfSeats) >= parseInt(bookedSeats)) {
@@ -40,24 +37,36 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       validate: {
         isDate: true,
-        isAfter: "02-01-2015",
+        isAfter: "10-02-2021",
+        customValidator(value) {
+          if (value === null && this.startDate == null) {
+            //error
+            throw new Error("The  StartDate is Empty");
+          }
+        },
       },
     },
     endDate: {
       type: DataTypes.STRING,
       validate: {
         isDate: true,
+
+        customValidator(value) {
+          if (value === null && this.startDate == null) {
+            throw new Error("The  EndDate is Empty");
+          }
+        },
       },
     },
     image: {
       type: DataTypes.STRING,
+      allowNull: false,
+
       validate: {
         isUrl: true,
       },
     },
   });
-  SequelizeSlugify.slugifyModel(Event, {
-    source: ["name"],
-  });
+
   return Event;
 };

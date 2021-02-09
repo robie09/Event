@@ -2,17 +2,18 @@ const express = require("express");
 const router = express.Router();
 const { Event } = require("../db/models");
 
-// //Home
-// router.get("/", async (req, res) => {
-//   console.log("HELLO");
-//   res.json({ message: "Event" });
-// });
+// if (Array.isArray(req.body)) {
+//     req.body.forEach(async (newEvent) => {
+//       await Event.findAll(;
+//     });
+//     res.status(201).json(req.body);
 
 // event List Router
 router.get("/", async (req, res) => {
   try {
     const event = await Event.findAll({
       attributes: ["id", "name", "image"],
+      exclude: ["createdAt", "updatedAt"],
     });
     res.json(event);
   } catch (error) {
@@ -26,6 +27,7 @@ router.delete("/:eventId", async (req, res) => {
     const foundevent = await Event.findByPk(req.params.eventId);
     if (foundevent) {
       await foundevent.destroy();
+
       res.status(204).end();
     } else {
       res.status(404).json({ message: "event Not Founsd" });
@@ -35,11 +37,16 @@ router.delete("/:eventId", async (req, res) => {
   }
 });
 
-//Create event Router
 router.post("/", async (req, res) => {
   try {
-    const newEvent = await Event.create(req.body);
-    res.status(201).json(newEvent);
+    if (Array.isArray(req.body)) {
+      await Event.bulkCreate(req.body);
+
+      res.status(201).json(req.body);
+    } else {
+      const newEvent = await Event.create(req.body);
+      res.status(201).json(newEvent);
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
