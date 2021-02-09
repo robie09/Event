@@ -3,27 +3,25 @@ const router = express.Router();
 const { Event } = require("../db/models");
 
 //fetches event Detail Route
-
 router.get("/:eventId", async (req, res) => {
   try {
     const foundevent = await Event.findByPk(req.params.eventId);
-    if (foundevent) {
-      foundevent.findAll();
-
-      res.json(foundevent);
-      res.status(200);
-    } else {
-      res.status(404).json({ message: "event Not Founsd" });
-    }
+    if (foundevent) res.status(200).json(foundevent);
+    else res.status(404).json({ message: "Event does not exist" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
 // event List Router
 router.get("/", async (req, res) => {
   try {
     const event = await Event.findAll({
-      attributes: ["id", "name", "image"],
+      order: [
+        ["startDate", "ASC"],
+        ["name", "ASC"],
+      ],
+      attributes: ["id", "name", "image", "startDate"],
       exclude: ["createdAt", "updatedAt"],
     });
     res.json(event);
@@ -54,6 +52,7 @@ router.delete("/:eventId", async (req, res) => {
   }
 });
 
+//Create event Router
 router.post("/", async (req, res) => {
   try {
     if (Array.isArray(req.body)) {

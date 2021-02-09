@@ -2,6 +2,7 @@ module.exports = (sequelize, DataTypes) => {
   const Event = sequelize.define("Event", {
     organizer: {
       type: DataTypes.STRING,
+      unique: true,
       validate: {
         len: [1, 20],
       },
@@ -26,25 +27,28 @@ module.exports = (sequelize, DataTypes) => {
     },
     bookedSeats: {
       type: DataTypes.INTEGER,
-
-      isGreaterThanOtherField(value) {
-        if (parseInt(value) >= parseInt(this.numOfSeats)) {
-          throw new Error("numOfSeats must be greater than otherField.");
-        }
-      },
-      Aretheytheyequalled(value) {
-        if (value === this.bookedSeats) {
-          //error
-          throw new Error("They are equalled");
-        }
-        console.log();
+      validate: {
+        isGreaterThanOtherField(value) {
+          if (parseInt(value) >= parseInt(this.numOfSeats)) {
+            throw new Error(
+              `number of seats ${this.numOfSeats} must be greater than ${this.bookedSeats}.`
+            );
+          }
+        },
+        Aretheytheyequalled(value) {
+          if (value === this.bookedSeats) {
+            //error
+            throw new Error("They are equalled");
+          }
+          console.log();
+        },
       },
     },
     startDate: {
       type: DataTypes.STRING,
       validate: {
         isDate: true,
-        isAfter: "10-02-2021",
+        isAfter: "02-10-2021",
         customValidator(value) {
           if (value === null && this.endDate == null) {
             //error
@@ -57,7 +61,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       validate: {
         isDate: true,
-
         customValidator(value) {
           if (value === null && this.startDate == null) {
             throw new Error("The  EndDate is Empty");
