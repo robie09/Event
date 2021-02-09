@@ -27,10 +27,17 @@ module.exports = (sequelize, DataTypes) => {
     bookedSeats: {
       type: DataTypes.INTEGER,
 
-      isGreaterThanOtherField(numOfSeats) {
-        if (parseInt(numOfSeats) >= parseInt(bookedSeats)) {
+      isGreaterThanOtherField(value) {
+        if (parseInt(value) >= parseInt(this.numOfSeats)) {
           throw new Error("numOfSeats must be greater than otherField.");
         }
+      },
+      Aretheytheyequalled(value) {
+        if (value === this.bookedSeats) {
+          //error
+          throw new Error("They are equalled");
+        }
+        console.log();
       },
     },
     startDate: {
@@ -39,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
         isDate: true,
         isAfter: "10-02-2021",
         customValidator(value) {
-          if (value === null && this.startDate == null) {
+          if (value === null && this.endDate == null) {
             //error
             throw new Error("The  StartDate is Empty");
           }

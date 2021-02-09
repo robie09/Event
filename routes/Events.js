@@ -2,12 +2,23 @@ const express = require("express");
 const router = express.Router();
 const { Event } = require("../db/models");
 
-// if (Array.isArray(req.body)) {
-//     req.body.forEach(async (newEvent) => {
-//       await Event.findAll(;
-//     });
-//     res.status(201).json(req.body);
+//fetches event Detail Route
 
+router.get("/:eventId", async (req, res) => {
+  try {
+    const foundevent = await Event.findByPk(req.params.eventId);
+    if (foundevent) {
+      foundevent.findAll();
+
+      res.json(foundevent);
+      res.status(200);
+    } else {
+      res.status(404).json({ message: "event Not Founsd" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 // event List Router
 router.get("/", async (req, res) => {
   try {
@@ -24,13 +35,19 @@ router.get("/", async (req, res) => {
 //Delete event Router
 router.delete("/:eventId", async (req, res) => {
   try {
-    const foundevent = await Event.findByPk(req.params.eventId);
-    if (foundevent) {
-      await foundevent.destroy();
-
-      res.status(204).end();
+    if (Array.isArray(req.body)) {
+      await Event.bulkDelete(req.body);
+      res.status(204).json(req.body);
     } else {
-      res.status(404).json({ message: "event Not Founsd" });
+      //res.status(404).json({ message: "event Not Founsd" });
+      const foundevent = await Event.findByPk(req.params.eventId);
+      if (foundevent) {
+        await foundevent.destroy();
+
+        res.status(204).end();
+      } else {
+        res.status(404).json({ message: "event Not Founsd" });
+      }
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -45,6 +62,7 @@ router.post("/", async (req, res) => {
       res.status(201).json(req.body);
     } else {
       const newEvent = await Event.create(req.body);
+
       res.status(201).json(newEvent);
     }
   } catch (error) {
