@@ -2,6 +2,12 @@ const express = require("express");
 const router = express.Router();
 const { Event } = require("../db/models");
 
+//Home
+router.get("/", async (req, res) => {
+  console.log("HELLO");
+  res.json({ message: "Event" });
+});
+
 // event List Router
 router.get("/", async (req, res) => {
   try {

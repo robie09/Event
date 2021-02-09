@@ -1,6 +1,6 @@
 const SequelizeSlugify = require("sequelize-slugify");
 
-const EventModel = (sequelize, DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
   const Event = sequelize.define("Event", {
     organizer: {
       type: DataTypes.STRING,
@@ -14,6 +14,7 @@ const EventModel = (sequelize, DataTypes) => {
         notContains: "event",
       },
     },
+    slug: { type: DataTypes.STRING, unique: true },
     email: {
       type: DataTypes.INTEGER,
       validate: {
@@ -36,20 +37,10 @@ const EventModel = (sequelize, DataTypes) => {
       },
     },
     startDate: {
-      type: DataTypes.STRING,
-      validate: {
-        isAfter: "2021-02-09",
-
-        //   customValidator(startDate) {
-        //       if (startDate === null ) {
-        //           throw new Error("name can't be null unless age is 10");
-        //       }
-        //  }
-      },
+      type: DataTypes.DATE,
     },
-
     endDate: {
-      type: DataTypes.STRING,
+      type: DataTypes.DATE,
     },
     image: {
       type: DataTypes.STRING,
@@ -58,10 +49,8 @@ const EventModel = (sequelize, DataTypes) => {
       },
     },
   });
-
-  SequelizeSlugify.slugifyModel(Product, { source: ["name"] });
-
+  SequelizeSlugify.slugifyModel(Event, {
+    source: ["name"],
+  });
   return Event;
 };
-
-module.exports = EventModel;
