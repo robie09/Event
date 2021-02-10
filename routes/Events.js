@@ -1,6 +1,33 @@
 const express = require("express");
 const router = express.Router();
 const { Event } = require("../db/models");
+const { Op } = require("sequelize");
+
+//fetches a list of fully booked events only.
+// {
+//   where: {
+//     numOfSeats: {
+//       [Op.eq]: this.bookedSeats,
+//     },
+//   },
+// }
+
+// Event.filter((event) => event.numOfSeats === event.bookedSeats)
+router.get("/full", async (req, res) => {
+  try {
+    const fullbookedEvent = await Event.findAll();
+
+    const foundbookedEvent = fullbookedEvent.filter(
+      (event) => event.numOfSeats === event.bookedSeats
+    );
+
+    if (foundbookedEvent) {
+      res.status(200).json(foundbookedEvent);
+    } else res.status(404).json({ message: "Event does not exist" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 //fetches event Detail Route
 router.get("/:eventId", async (req, res) => {
@@ -35,7 +62,7 @@ router.delete("/:eventId", async (req, res) => {
   try {
     if (Array.isArray(req.body)) {
       await Event.bulkDelete(req.body);
-      res.status(204).json(req.body);
+      res.status(204).json(req.body).end();
     } else {
       //res.status(404).json({ message: "event Not Founsd" });
       const foundevent = await Event.findByPk(req.params.eventId);

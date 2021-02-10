@@ -29,18 +29,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       validate: {
         isGreaterThanOtherField(value) {
-          if (parseInt(value) >= parseInt(this.numOfSeats)) {
+          if (parseInt(value) > parseInt(this.numOfSeats)) {
             throw new Error(
               `number of seats ${this.numOfSeats} must be greater than ${this.bookedSeats}.`
             );
           }
-        },
-        Aretheytheyequalled(value) {
-          if (value === this.bookedSeats) {
-            //error
-            throw new Error("They are equalled");
-          }
-          console.log();
         },
       },
     },
